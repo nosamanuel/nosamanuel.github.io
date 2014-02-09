@@ -19,13 +19,13 @@ This makes me a jealous developer, and I wondered if I could add an equivalent f
 
 ### Batteries Not Included
 
-Python does have some nice ways to destructure iterables in the form of [unpacking](http://robert-lujo.com/post/40871820711/python-destructuring), but nothing that's meant to destructure objects by named attributes.
+Python already has some nice ways to destructure iterables in the form of [unpacking](http://robert-lujo.com/post/40871820711/python-destructuring), but nothing that's meant to destructure objects by named attributes.
 
-It *does* have a certain brand of destructuring bind in its `import` mechanism:
+It also has a certain brand of destructuring bind in its `import` mechanism:
 
     from module import a, b
 
-So in theory, you could something like the following:
+So in theory, you could do something like the following:
 
     import sys
     sys.modules['user'] = user
