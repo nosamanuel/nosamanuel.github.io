@@ -1,0 +1,12 @@
+name: A Blog by Noah Seger
+description: Programming, y'all
+# meta_description: "Your New Jekyll Site, Blogging about stuffs"
+
+markdown: redcarpet
+pygments: true
+logo: false
+paginate: 15
+
+# Details for the RSS feed generator
+url:            'https://nosamanuel.github.com'
+author:         'Noah Seger'
