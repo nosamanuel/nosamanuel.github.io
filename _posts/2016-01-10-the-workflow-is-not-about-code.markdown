@@ -10,7 +10,7 @@ The following quote from that conversation caught my attention:
 
 > Pull Requests is the tail wagging the dog, it says that the workflow is about code. It's not. The workflow is about ideas. The workflow is about conversations between people.
 
-Stu is referring here to the [Clojure contribution process](http://dev.clojure.org/display/community/JIRA+workflow) but to me the idea invites a broader application. He clarified that the process is not anti-code, but pro-idea:
+Stu is referring here to the [Clojure contribution process](http://dev.clojure.org/display/community/JIRA+workflow) but to me the idea invites a broader application. He clarified that this process is not anti-code, but pro-idea:
 
 > We really want to see the statement of a problem, a statement of alternatives, and a statement that is easy for outside observers to assess.
 
