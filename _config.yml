@@ -3,7 +3,7 @@ description: A Web Site by Noah Seger
 # meta_description: "Your New Jekyll Site, Blogging about stuffs"
 
 markdown: redcarpet
-pygments: true
+highlighter: true
 logo: false
 paginate: 15
 

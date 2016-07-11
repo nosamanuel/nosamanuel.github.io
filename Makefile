@@ -8,3 +8,6 @@ preview:
 publish:
 	git push
 	open http://nosamanuel.github.io/
+
+install:
+	gem install jekyll -v 2.5.3
