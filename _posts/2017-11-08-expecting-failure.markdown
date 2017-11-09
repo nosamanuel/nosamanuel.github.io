@@ -16,68 +16,70 @@ The idea behind expecting a unit test to fail is that we want to:
 2. Leave the test in a pending state so we don’t forget about it
 3. Still allow the whole test suite to pass
 
-If we were to write our test in Mocha, but wrap it in `[it.skip](https://mochajs.org/#inclusive-tests)`, then the code would never execute when we run our suite. This means that the next time we actually try to run the test, it might fail for a completely different reason. Even worse, it might succeed for reasons we don’t understand!
+If we were to write our test in Mocha, but wrap it in [`it.skip`](https://mochajs.org/#inclusive-tests), then the code would never execute when we run our suite. This means that the next time we actually try to run the test, it might fail for a completely different reason. Even worse, it might succeed for reasons we don’t understand!
 
 Expecting failures has always been easy to do in [other languages](https://docs.python.org/2/library/unittest.html#unittest.expectedFailure), but [it’s not an explicit part of the Mocha API](https://github.com/mochajs/mocha/issues/1048). The key to making it work in Mocha is the programmatic `this.skip()` method, which marks the current test as skipped:
 
 
-    const { assert, AssertionError } = require('chai')
+```javascript
+const { assert, AssertionError } = require('chai')
 
-    class ServiceError extends Error {}
+class ServiceError extends Error {}
 
-    const ExampleService = {
-      getWithError: () => Promise.reject(new ServiceError()),
-      getWithFailure: () => Promise.resolve({ ok: false })
-    }
+const ExampleService = {
+  getWithError: () => Promise.reject(new ServiceError()),
+  getWithFailure: () => Promise.resolve({ ok: false })
+}
 
-    describe('Expected failures', function () {
+describe('Expected failures', function () {
 
-      /**
-       * This test should pass, but it fails for reason X.
-       * When X is fixed, remove the skip and test like normal.
-       */
-      it('fails synchronously', function () {
-        assert.throws(
-          () => assert.equal('foo', 'bar'),
-          AssertionError
-        )
+  /**
+   * This test should pass, but it fails for reason X.
+   * When X is fixed, remove the skip and test like normal.
+   */
+  it('fails synchronously', function () {
+    assert.throws(
+      () => assert.equal('foo', 'bar'),
+      AssertionError
+    )
+    this.skip()
+  });
+
+  /**
+   * This test should pass, but it fails for reason Y.
+   * When Y is fixed, remove the skip and test like normal.
+   */
+  it('fails when a Promise is rejected', function () {
+    return ExampleService.getWithError()
+      .then(result => {
+        // Ideal behavior; broken because of the error.
+        assert.deepEqual(result, { ok: true })
+      })
+      .then(assert.fail, error => {
+        // Current behavior; expected failure.
+        assert.instanceOf(error, ServiceError)
         this.skip()
-      });
+      })
+  });
 
-      /**
-       * This test should pass, but it fails for reason Y.
-       * When Y is fixed, remove the skip and test like normal.
-       */
-      it('fails when a Promise is rejected', function () {
-        return ExampleService.getWithError()
-          .then(result => {
-            // Ideal behavior; broken because of the error.
-            assert.deepEqual(result, { ok: true })
-          })
-          .then(assert.fail, error => {
-            // Current behavior; expected failure.
-            assert.instanceOf(error, ServiceError)
-            this.skip()
-          })
-      });
-
-      /**
-       * This test should pass, but it fails for reason Z.
-       * When Z is fixed, remove the skip and test like normal.
-       */
-      it('fails when asserting a Promise result', function () {
-        return ExampleService.getWithFailure()
-          .then(result => {
-            // Ideal behavior; currently broken.
-            assert.deepEqual(result, { ok: true })
-          })
-          .then(assert.fail, error => {
-            // Expected failure.
-            assert.instanceOf(error, AssertionError)
-            this.skip()
-          })
-      });
-    });
+  /**
+   * This test should pass, but it fails for reason Z.
+   * When Z is fixed, remove the skip and test like normal.
+   */
+  it('fails when asserting a Promise result', function () {
+    return ExampleService.getWithFailure()
+      .then(result => {
+        // Ideal behavior; currently broken.
+        assert.deepEqual(result, { ok: true })
+      })
+      .then(assert.fail, error => {
+        // Expected failure.
+        assert.instanceOf(error, AssertionError)
+        this.skip()
+      })
+  });
+});
+```
 
 Now when our test suite runs, these two cases will be marked as pending instead of successes or failures!
 
@@ -87,7 +89,7 @@ Now when our test suite runs, these two cases will be marked as pending instead 
 
 If our tests fail for any other reason than expected, the test will throw an unhandled error and will be recorded as **failed** instead of **skipped**—exactly what we want.
 
-When using promises, we pass `[assert.fail](http://chaijs.com/api/assert/#failactual-expected-message-operator)` as the `[onFulfilled](https://github.com/promises-aplus/promises-spec#the-then-method)` [handler](https://github.com/promises-aplus/promises-spec#the-then-method) so that if the promise unexpectedly succeeds then our test fails right away. Alternatively, we can make an assertion about the ideal result that we expect to fail, and handle it in the next `onRejected` handler as in the last example.
+When using promises, we pass [`assert.fail`](http://chaijs.com/api/assert/#failactual-expected-message-operator) as the [`onFulfilled`](https://github.com/promises-aplus/promises-spec#the-then-method) [handler](https://github.com/promises-aplus/promises-spec#the-then-method) so that if the promise unexpectedly succeeds then our test fails right away. Alternatively, we can make an assertion about the ideal result that we expect to fail, and handle it in the next `onRejected` handler as in the last example.
 
 
 **Caveats**
